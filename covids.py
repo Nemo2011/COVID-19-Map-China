@@ -48,7 +48,6 @@ print(f"Done in {round(end - start, 3)} seconds. ")
 if __name__ == '__main__':
     from plotly import offline
     from plotly.graph_objs import Bar, Layout
-    print("制作图表...")
     databar = Bar(x=areas, y=total_lst, name="存活人数", marker_color='rgb(0, 0, 255)')
     x_conf = {"title":"地区"}
     y_conf = {"title":"确诊病例"}

@@ -33,7 +33,7 @@ COLORS = {
 	"澳门":(90, 49, 127),  
 	"江苏":(133, 246, 186),  
 	"北京":(236, 28, 36),  
-	"天津":(244, 220, 125),  
+	"天津":(177, 162, 92), 
 	"上海":(192, 153, 94),  
 	"重庆":(82, 39, 34),
 	"江西":(252, 121, 121)
@@ -95,6 +95,8 @@ print(f"Done in {round(end - start, 3)} seconds. ")
 
 if __name__ == '__main__':
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    cv2.namedWindow('frame', 0)
+    cv2.resizeWindow('frame', 600, 383)
     while True:
         frame = cv2.imread("map_background.png")
         for idx, area in enumerate(POS):
@@ -102,6 +104,9 @@ if __name__ == '__main__':
                 cv2.rectangle(frame, pos, pos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], thickness=1)
         cv2.namedWindow('frame', 0)
         cv2.imshow('frame', frame)
-        if cv2.waitKey(1) == ord("Q") or cv2.waitKey(1) == ord("q"):
+        k = cv2.waitKey(1) & 0xFF
+        if not cv2.getWindowProperty('frame', cv2.WND_PROP_VISIBLE):
+            break
+        if k in [27, 81, 113]:
             break
     cv2.destroyAllWindows()
