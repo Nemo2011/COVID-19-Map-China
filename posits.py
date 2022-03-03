@@ -97,14 +97,33 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     cv2.namedWindow('frame', 0)
     cv2.resizeWindow('frame', 600, 383)
+    select = ""
+    point = [0, 0]
     while True:
+        def mousecallback(event, x, y, flags, param):
+            if event == cv2.EVENT_MOUSEMOVE:
+                global point
+                point = [x, y]
         frame = cv2.imread("map_background.png")
+        flag = False
+        for index, area in enumerate(POS):
+            points = POS[area]
+            mousepos = point
+            if mousepos in points:
+                select = area
+                flag = True
+        if not flag:
+            select = ""
         for idx, area in enumerate(POS):
             for pos in POS[area]:
-                cv2.rectangle(frame, pos, pos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], thickness=1)
+                if not select == area:
+                    cv2.rectangle(frame, pos, pos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], thickness=1)
+                else:
+                    cv2.rectangle(frame, pos, pos, [125, 125, 125], thickness=1)
+        cv2.setMouseCallback('frame', mousecallback)
         cv2.namedWindow('frame', 0)
         cv2.imshow('frame', frame)
-        k = cv2.waitKey(1) & 0xFF
+        k = cv2.waitKey(1)
         if not cv2.getWindowProperty('frame', cv2.WND_PROP_VISIBLE):
             break
         if k in [27, 81, 113]:

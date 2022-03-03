@@ -45,6 +45,14 @@ areas = areas[::-1]
 end = time.perf_counter()
 print(f"Done in {round(end - start, 3)} seconds. ")
 
+CHINA_TOTAL = data['chinaTotal']['confirm']
+CHINA_DEAD = data['chinaTotal']['dead']
+CHINA_HEAL = data['chinaTotal']['heal']
+AREAS_SORT = areas
+CONFIRM_SORT = total_lst
+DEAD_SORT = new_dead
+HEAL_SORT = new_heal
+
 if __name__ == '__main__':
     from plotly import offline
     from plotly.graph_objs import Bar, Layout
@@ -53,11 +61,3 @@ if __name__ == '__main__':
     y_conf = {"title":"确诊病例"}
     layout = Layout(title=f"中国各省、自治区、直辖市的新冠病毒确诊病例({last_time}更新)", xaxis=x_conf, yaxis=y_conf, barmode="stack")
     offline.plot({'data':databar, 'layout':layout}, filename="Confirm-Datas-Tests.html", show_link=True)
-else:
-    CHINA_TOTAL = data['chinaTotal']['confirm']
-    CHINA_DEAD = data['chinaTotal']['dead']
-    CHINA_HEAL = data['chinaTotal']['heal']
-    AREAS_SORT = areas
-    CONFIRM_SORT = total_lst
-    DEAD_SORT = new_dead
-    HEAL_SORT = new_heal
