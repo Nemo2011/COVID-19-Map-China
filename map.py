@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from covids import CHINA_TOTAL, CHINA_HEAL, CHINA_DEAD, CONFIRM_SORT, HEAL_SORT, DEAD_SORT
+from covids import CHINA_TOTAL, CHINA_HEAL, CHINA_DEAD, CONFIRM_SORT, HEAL_SORT, DEAD_SORT, AREAS
 from posits import COLORS, POS
 
 def paint_chinese_opencv(im, chinese, pos, color, size):
@@ -24,8 +24,9 @@ if __name__ == '__main__':
     select = ""
     point = [0, 0]
     evt = 0
+    select_asked = False
     while True:
-        def mousecallback(event, x, y, flags, param):
+        def mousecallback(event, x, y, *args):
             global point, evt
             if event == cv2.EVENT_LBUTTONUP or event == cv2.EVENT_RBUTTONDOWN:
                 point = [x, y]
@@ -38,10 +39,19 @@ if __name__ == '__main__':
             points = POS[area]
             mousepos = point
             if mousepos in points:
-                select = area
+                if not select_asked:
+                    select = area
+                if not select_asked and evt == 1:
+                    select = area
+                    select_asked = True
+                if select_asked and evt == 1:
+                    select = area
                 flag = True
         if not flag:
-            select = ""
+            if not select_asked:
+                select = ""
+            if select_asked and evt == 1:
+                select_asked = False
         if point[0] >= 10 and point[0] <= 60 and point[1] >= 323 and point[1] <= 373 and evt == 1:
             break
         frame = cv2.imread("map_background.png")
@@ -53,10 +63,17 @@ if __name__ == '__main__':
                     cv2.rectangle(frame, pos, pos, [125, 125, 125], thickness=1)
         cv2.rectangle(frame, (35, 348), (35, 348), (0, 0, 0), 50)
         frame = paint_chinese_opencv(frame, "退出", (16, 338), (255, 255, 255), 20)
-        cv2.rectangle(frame, (440, 190), (590, 225), (0, 0, 0), 2)
-        state_string = f"中国：\n确诊{CHINA_TOTAL}人"
-        frame = paint_chinese_opencv(frame, state_string, (445, 130), (0, 0, 0), 20)
-        frame = paint_chinese_opencv(frame, "已选择：" + select, (445, 200), (0, 0, 0), 20)
+        if not select_asked:
+            state_string = f"    中国：\n确诊{CHINA_TOTAL}人,\n治愈{CHINA_HEAL}人,\n死亡{CHINA_DEAD}人"
+            frame = paint_chinese_opencv(frame, state_string, (445, 130), (0, 0, 0), 20)
+            cv2.rectangle(frame, (440, 240), (590, 280), (0, 0, 0), 2)
+            frame = paint_chinese_opencv(frame, "已选择：" + select, (445, 250), (0, 0, 0), 20)
+        else:
+            state_string = f"    {select}：\n确诊{CONFIRM_SORT[AREAS.index(select)]}人,\n治愈{HEAL_SORT[AREAS.index(select)]}人,\n死亡{DEAD_SORT[AREAS.index(select)]}人"
+            frame = paint_chinese_opencv(frame, state_string, (445, 130), (0, 0, 0), 20)
+            area = select
+            cv2.rectangle(frame, (440, 235), (590, 255), [COLORS[area][2], COLORS[area][1], COLORS[area][0]], 2)
+            frame = paint_chinese_opencv(frame, "   详细信息", (445, 245),(0, 0, 0), 20)
         cv2.setMouseCallback('COVID-19 Map of China', mousecallback)
         cv2.namedWindow('COVID-19 Map of China', 0)
         cv2.imshow('COVID-19 Map of China', frame)
