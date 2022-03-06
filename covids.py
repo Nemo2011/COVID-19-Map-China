@@ -41,6 +41,10 @@ for num in total_lst:
     areas.append(get_key(num, total_dict))
     new_dead.append(total_dict[get_key(num, total_dict)][1])
     new_heal.append(total_dict[get_key(num, total_dict)][2])
+total_lst = total_lst[::-1]
+new_dead = new_dead[::-1]
+new_heal = new_heal[::-1]
+areas = areas[::-1]
 cities = {}
 for area in areas:
     cities_data = []
@@ -65,22 +69,18 @@ for area in areas:
         if not key in sort_data.keys():
             sort_data[key] = new_data[key]
     cities[area] = sort_data
-total_lst = total_lst[::-1]
-new_dead = new_dead[::-1]
-new_heal = new_heal[::-1]
-cities = cities[::-1]
-areas = areas[::-1]
 
 end = time.perf_counter()
 
 print(f"Done in {round(end - start, 3)} seconds. ")
+
+TIME = data["lastUpdateTime"]
 
 CHINA_TOTAL = data['chinaTotal']['confirm']
 CHINA_DEAD = data['chinaTotal']['dead']
 CHINA_HEAL = data['chinaTotal']['heal']
 
 AREAS_SORT = areas
-
 CONFIRM_SORT = total_lst
 DEAD_SORT = new_dead
 HEAL_SORT = new_heal

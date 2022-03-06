@@ -1,7 +1,8 @@
+""" The main program of the map. """
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from covids import CHINA_TOTAL, CHINA_HEAL, CHINA_DEAD, CONFIRM_SORT, HEAL_SORT, DEAD_SORT, CITIES, AREAS
+from covids import TIME, CHINA_TOTAL, CHINA_HEAL, CHINA_DEAD, CONFIRM_SORT, HEAL_SORT, DEAD_SORT, CITIES, AREAS
 from posits import COLORS, POS
 
 def paint_chinese_opencv(im, chinese, pos, color, size):
@@ -109,6 +110,7 @@ if __name__ == '__main__':
         cv2.rectangle(frame, (35, 348), (35, 348), (0, 0, 0), 50)
         frame = paint_chinese_opencv(frame, "退出", (16, 338), (255, 255, 255), 20)
         if not cities_view:
+            frame = paint_chinese_opencv(frame, "Update at: " + TIME, (0, 0), (0, 0, 0), 20)
             for idx, area in enumerate(POS):
                 for pos in POS[area]:
                     if not select == area:
@@ -121,6 +123,8 @@ if __name__ == '__main__':
                 xbig = int(235 / pweight)
                 ybig = int(318 / ptall)
                 final = min(xbig, ybig)
+                if final == 1:
+                    final = 1.5
                 if final > 10:
                     final = 10
                 newpos = [pos[0] * final, pos[1] * final]
@@ -132,10 +136,11 @@ if __name__ == '__main__':
                 needminusy = yobjpos * final - nyobjpos
                 newpos = [newpos[0] - needminusx, newpos[1] - needminusy]
                 newpos = [int(newpos[0]), int(newpos[1])]
-                cv2.rectangle(frame, newpos, newpos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], final * 2)
+                cv2.rectangle(frame, newpos, newpos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], int(final * 2))
         cv2.setMouseCallback('COVID-19 Map of China', mousecallback)
         cv2.namedWindow('COVID-19 Map of China', 0)
         cv2.imshow('COVID-19 Map of China', frame)
+        cv2.setWindowTitle('COVID-19 Map of China', 'COVID-19 Map of China')
         k = cv2.waitKey(1)
         if not cv2.getWindowProperty('COVID-19 Map of China', cv2.WND_PROP_VISIBLE):
             break
