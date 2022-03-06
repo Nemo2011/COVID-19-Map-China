@@ -1,10 +1,13 @@
+""" COVID-19's data's sets. """
 import json
 import sys
 import time
 import requests
 
 print("Loading COVID-19 datas...")
+
 start = time.perf_counter()
+
 try:
     url = 'https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5&callback=&_=%d'%int(time.time()*1000)
     r = requests.get(url=url)
@@ -27,16 +30,6 @@ for area in data['areaTree'][0]['children']:
     total_lst.append(area_confirm)
     total_dead.append(area_dead)
     total_dict[area_name] = [area_confirm, area_dead, area_heal]
-"""
-maxn = 0
-a = ""
-for d in data['areaTree'][0]['children']:
-    if len(d['children']) > maxn:
-        maxn = len(d['children'])
-        a = d['name']
-print(maxn)
-print(a)
-"""
 def get_key(obj, dct):
     for key in dct:
         if dct[key][0] == obj:
@@ -75,25 +68,22 @@ for area in areas:
 total_lst = total_lst[::-1]
 new_dead = new_dead[::-1]
 new_heal = new_heal[::-1]
+cities = cities[::-1]
 areas = areas[::-1]
+
 end = time.perf_counter()
+
 print(f"Done in {round(end - start, 3)} seconds. ")
 
 CHINA_TOTAL = data['chinaTotal']['confirm']
 CHINA_DEAD = data['chinaTotal']['dead']
 CHINA_HEAL = data['chinaTotal']['heal']
+
 AREAS_SORT = areas
+
 CONFIRM_SORT = total_lst
 DEAD_SORT = new_dead
 HEAL_SORT = new_heal
+
 CITIES = cities
 AREAS = areas
-
-if __name__ == '__main__':
-    from plotly import offline
-    from plotly.graph_objs import Bar, Layout
-    databar = Bar(x=areas, y=total_lst, name="存活人数", marker_color='rgb(0, 0, 255)')
-    x_conf = {"title":"地区"}
-    y_conf = {"title":"确诊病例"}
-    layout = Layout(title=f"中国各省、自治区、直辖市的新冠病毒确诊病例({last_time}更新)", xaxis=x_conf, yaxis=y_conf, barmode="stack")
-    offline.plot({'data':databar, 'layout':layout}, filename="Confirm-Datas-Tests.html", show_link=True)
