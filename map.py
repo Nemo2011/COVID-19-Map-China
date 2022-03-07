@@ -1,32 +1,10 @@
 """ The main program of the map. """
 import cv2
-import numpy as np
-from PIL import Image, ImageDraw, ImageFont
-from covids import TIME, CHINA_TOTAL, CHINA_HEAL, CHINA_DEAD, CONFIRM_SORT, HEAL_SORT, DEAD_SORT, CITIES, AREAS
-from posits import COLORS, POS
-
-#汉字绘制函数
-def paint_chinese_opencv(im, chinese, pos, color, size):
-    """
-        @param:im:Image in cv2. 
-        @param:chinese:The text. 
-        @param:pos:Position of x, y. 
-        @param:color:BGR color of the text. 
-        @param:size:The size of the text. 
-    """
-    img_PIL = Image.fromarray(cv2.cvtColor(im, cv2.COLOR_BGR2RGB))
-    local = "simsun.ttc"
-    font = ImageFont.truetype(local, size, encoding="utf-8")
-    fillColor = color
-    position = pos
-    if not isinstance(chinese, str):
-        chinese = chinese.decode('utf-8')
-    draw = ImageDraw.Draw(img_PIL)
-    draw.text(position, chinese, font=font, fill=tuple(fillColor))
-    img = cv2.cvtColor(np.asarray(img_PIL), cv2.COLOR_RGB2BGR)
-    return img
+from datas import *
+from tools import paint_chinese_opencv
 
 if __name__ == '__main__':
+    print("Staring...")
     #TODO:初始化
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     cv2.namedWindow('COVID-19 Map of China', 0)
@@ -35,8 +13,10 @@ if __name__ == '__main__':
     point = [0, 0]
     evt = 0
     select_asked = False
+    select_asked_select = ""
     cities_view = False
     page = 1
+
     while True:
         #TODO:处理事件
         flag = False
@@ -52,6 +32,9 @@ if __name__ == '__main__':
                 if select_asked and evt == 1:
                     if not cities_view:
                         select = area
+                if select_asked and evt == 0:
+                    if not cities_view:
+                        select_asked_select = area
                 flag = True
         if not flag:
             if not select_asked:
@@ -63,7 +46,11 @@ if __name__ == '__main__':
                 elif cities_view:
                     pass
                 else:
+                    select_asked_select = ""
                     select_asked = False
+            if select_asked and evt == 0:
+                if not cities_view:
+                    select_asked_select = ""
         if point[0] >= 10 and point[0] <= 60 and point[1] >= 323 and point[1] <= 373 and evt == 1:
             break
         if cities_view and point[0] >= 70 and point[0] <= 120 and point[1] >= 323 and point[1] <= 373 and evt == 1:
@@ -73,8 +60,9 @@ if __name__ == '__main__':
             if page - 1 > 0:
                 page -= 1
         if cities_view and point[0] in range(500, 600) and point[1] in range(300, 401) and evt == 1:
-            if page + 1 <= int(len(CITIES[select])) / 6 + 1:
+            if page + 1 <= int(len(CITIES[select]) / 6) + int(bool(len(CITIES[select]) % 6 / 1)):
                 page += 1
+
         #TODO:绘制显示内容
         frame = cv2.imread("map_background.png")
         if not cities_view:
@@ -95,6 +83,8 @@ if __name__ == '__main__':
                     if not select == area:
                         cv2.rectangle(frame, pos, pos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], thickness=1)
                     else:
+                        cv2.rectangle(frame, pos, pos, [125, 125, 125], thickness=1)
+                    if select_asked and select_asked_select == area:
                         cv2.rectangle(frame, pos, pos, [125, 125, 125], thickness=1)
         else:
             cv2.rectangle(frame, (0, 0), (600, 383), (255, 255, 255), thickness=600)
@@ -133,7 +123,7 @@ if __name__ == '__main__':
             upmove = miny - yobjpos
             for index, apoint in enumerate(positions):
                 positions[index] = [positions[index][0] - leftmove, positions[index][1] - upmove]
-            frame = paint_chinese_opencv(frame, select, (265, 0), COLORS[select], 30)
+            frame = paint_chinese_opencv(frame, select, (265, 0), (0, 0, 0), 30)
             for pos in positions:
                 xbig = int(280 / pweight)
                 ybig = int(200 / ptall)
@@ -152,11 +142,11 @@ if __name__ == '__main__':
                 newpos = [newpos[0] - needminusx, newpos[1] - needminusy]
                 newpos = [int(newpos[0]), int(newpos[1])]
                 cv2.rectangle(frame, newpos, newpos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], int(final * 2))
-            cv2.line(frame, (300, 40), (300, 285), (0, 0, 0), 10)
-            cv2.line(frame, (420, 40), (420, 285), (0, 0, 0), 10)
-            cv2.line(frame, (480, 40), (480, 285), (0, 0, 0), 10)
-            cv2.line(frame, (540, 40), (540, 285), (0, 0, 0), 10)
-            cv2.line(frame, (300, 285), (600, 285), (0, 0, 0), 10)
+            cv2.line(frame, (300, 40), (300, 285), (0, 0, 0), 5)
+            cv2.line(frame, (420, 40), (420, 285), (0, 0, 0), 5)
+            cv2.line(frame, (480, 40), (480, 285), (0, 0, 0), 5)
+            cv2.line(frame, (540, 40), (540, 285), (0, 0, 0), 5)
+            cv2.line(frame, (300, 285), (600, 285), (0, 0, 0), 5)
             frame = paint_chinese_opencv(frame, "城市", (305, 45), (0, 0, 0), 20)
             frame = paint_chinese_opencv(frame, "确诊", (425, 45), (0, 0, 0), 20)
             frame = paint_chinese_opencv(frame, "治愈", (485, 45), (0, 0, 0), 20)
@@ -164,35 +154,43 @@ if __name__ == '__main__':
             cv2.line(frame, (300, 75), (600, 75), (0, 0, 0), 5)
             cv2.rectangle(frame, (350, 335), (350, 335), (125, 125, 125), 50)
             cv2.rectangle(frame, (550, 335), (550, 335), (125, 125, 125), 50)
-            frame = paint_chinese_opencv(frame, f"{page}/{int(len(CITIES[select]) / 6) + 1}", (440, 326), (0, 0, 0), 20)
-            frame = paint_chinese_opencv(frame, "<-", (336, 326), (0, 0, 0), 20)
-            frame = paint_chinese_opencv(frame, "->", (536, 326), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, f"{page}/{int(len(CITIES[select]) / 6) + int(bool(len(CITIES[select]) % 6 / 1))}", (440, 326), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "<-", (340, 326), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "->", (540, 326), (0, 0, 0), 20)
             for index, city in enumerate(citylst):
                 y = 75 + 35 * index + 5
-                frame = paint_chinese_opencv(frame, list(city.keys())[0], (305, y), (0, 0, 0), 20)
-                frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][0]), (425, y), (0, 0, 0), 20)
-                frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][1]), (485, y), (0, 0, 0), 20)
-                frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][2]), (545, y), (0, 0, 0), 20)
+                frame = paint_chinese_opencv(frame, list(city.keys())[0], (305, y), (0, 0, 0), 15)
+                frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][0]), (425, y), (0, 0, 0), 15)
+                frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][1]), (485, y), (0, 0, 0), 15)
+                frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][2]), (545, y), (0, 0, 0), 15)
         cv2.rectangle(frame, (35, 348), (35, 348), (0, 0, 0), 50)
         frame = paint_chinese_opencv(frame, "退出", (16, 338), (255, 255, 255), 20)
+
         #TODO:事件响应
         def mousecallback(event, x, y, *args):
             global point, evt
-            if event == cv2.EVENT_LBUTTONUP or event == cv2.EVENT_RBUTTONDOWN:
+            if event == cv2.EVENT_LBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN or event == cv2.EVENT_MBUTTONDOWN:
                 point = [x, y]
                 evt = 1
             elif event == cv2.EVENT_MOUSEMOVE:
                 point = [x, y]
                 evt = 0
         cv2.setMouseCallback('COVID-19 Map of China', mousecallback)
+
         #TODO:显示屏幕
         cv2.namedWindow('COVID-19 Map of China', 0)
         cv2.imshow('COVID-19 Map of China', frame)
         cv2.setWindowTitle('COVID-19 Map of China', 'COVID-19 Map of China')
-        #TODO:更新屏幕
+
+        #TODO:更新
+        pos = [0, 0]
+        evt = 0
         k = cv2.waitKey(1)
         if not cv2.getWindowProperty('COVID-19 Map of China', cv2.WND_PROP_VISIBLE):
             break
         if k in [27, 81, 113]:
             break
+
+    #TODO:结束销毁
     cv2.destroyAllWindows()
+    print("End.")

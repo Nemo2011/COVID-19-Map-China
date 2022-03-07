@@ -3,11 +3,11 @@ import json
 import sys
 import time
 import requests
+from tools import get_key_lists_index
 
 print("Loading COVID-19 datas...")
-
 start = time.perf_counter()
-
+#TODO:爬取数据
 try:
     url = 'https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5&callback=&_=%d'%int(time.time()*1000)
     r = requests.get(url=url)
@@ -16,6 +16,7 @@ try:
 except:
     print("Loading datas error. Please check your Internet. ")
     sys.exit()
+#TODO:处理数据
 total_lst = []
 total_dead = []
 total_dict = {}
@@ -30,17 +31,13 @@ for area in data['areaTree'][0]['children']:
     total_lst.append(area_confirm)
     total_dead.append(area_dead)
     total_dict[area_name] = [area_confirm, area_dead, area_heal]
-def get_key(obj, dct):
-    for key in dct:
-        if dct[key][0] == obj:
-            return key
 new_dead = []
 new_heal = []
 total_lst.sort()
 for num in total_lst:
-    areas.append(get_key(num, total_dict))
-    new_dead.append(total_dict[get_key(num, total_dict)][1])
-    new_heal.append(total_dict[get_key(num, total_dict)][2])
+    areas.append(get_key_lists_index(num, total_dict))
+    new_dead.append(total_dict[get_key_lists_index(num, total_dict)][1])
+    new_heal.append(total_dict[get_key_lists_index(num, total_dict)][2])
 total_lst = total_lst[::-1]
 new_dead = new_dead[::-1]
 new_heal = new_heal[::-1]
@@ -69,21 +66,16 @@ for area in areas:
         if not key in sort_data.keys():
             sort_data[key] = new_data[key]
     cities[area] = sort_data
-
 end = time.perf_counter()
-
 print(f"Done in {round(end - start, 3)} seconds. ")
-
+#TODO:整理数据
 TIME = data["lastUpdateTime"]
-
 CHINA_TOTAL = data['chinaTotal']['confirm']
 CHINA_DEAD = data['chinaTotal']['dead']
 CHINA_HEAL = data['chinaTotal']['heal']
-
 AREAS_SORT = areas
 CONFIRM_SORT = total_lst
 DEAD_SORT = new_dead
 HEAL_SORT = new_heal
-
 CITIES = cities
 AREAS = areas
