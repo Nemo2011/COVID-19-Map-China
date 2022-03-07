@@ -57,7 +57,7 @@ for area in areas:
         new_data[city['name']] = [city['total']['confirm'], city['total']['heal'], city['total']['dead']]
     sort_data = {}
     for key in new_data:
-        if key == "地区待确认":
+        if key.count("待确认") >= 1:
             sort_data[key] = new_data[key]
         elif key == "境外输入":
             sort_data[key] = new_data[key]

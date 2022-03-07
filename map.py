@@ -5,7 +5,15 @@ from PIL import Image, ImageDraw, ImageFont
 from covids import TIME, CHINA_TOTAL, CHINA_HEAL, CHINA_DEAD, CONFIRM_SORT, HEAL_SORT, DEAD_SORT, CITIES, AREAS
 from posits import COLORS, POS
 
+#汉字绘制函数
 def paint_chinese_opencv(im, chinese, pos, color, size):
+    """
+        @param:im:Image in cv2. 
+        @param:chinese:The text. 
+        @param:pos:Position of x, y. 
+        @param:color:BGR color of the text. 
+        @param:size:The size of the text. 
+    """
     img_PIL = Image.fromarray(cv2.cvtColor(im, cv2.COLOR_BGR2RGB))
     local = "simsun.ttc"
     font = ImageFont.truetype(local, size, encoding="utf-8")
@@ -19,6 +27,7 @@ def paint_chinese_opencv(im, chinese, pos, color, size):
     return img
 
 if __name__ == '__main__':
+    #TODO:初始化
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     cv2.namedWindow('COVID-19 Map of China', 0)
     cv2.resizeWindow('COVID-19 Map of China', 600, 383)
@@ -29,14 +38,7 @@ if __name__ == '__main__':
     cities_view = False
     page = 1
     while True:
-        def mousecallback(event, x, y, *args):
-            global point, evt
-            if event == cv2.EVENT_LBUTTONUP or event == cv2.EVENT_RBUTTONDOWN:
-                point = [x, y]
-                evt = 1
-            elif event == cv2.EVENT_MOUSEMOVE:
-                point = [x, y]
-                evt = 0
+        #TODO:处理事件
         flag = False
         for index, area in enumerate(POS):
             points = POS[area]
@@ -67,6 +69,13 @@ if __name__ == '__main__':
         if cities_view and point[0] >= 70 and point[0] <= 120 and point[1] >= 323 and point[1] <= 373 and evt == 1:
             cities_view = False
             page = 1
+        if cities_view and point[0] in range(300, 401) and point[1] in range(300, 401) and evt == 1:
+            if page - 1 > 0:
+                page -= 1
+        if cities_view and point[0] in range(500, 600) and point[1] in range(300, 401) and evt == 1:
+            if page + 1 <= int(len(CITIES[select])) / 6 + 1:
+                page += 1
+        #TODO:绘制显示内容
         frame = cv2.imread("map_background.png")
         if not cities_view:
             if not select_asked:
@@ -80,9 +89,26 @@ if __name__ == '__main__':
                 area = select
                 cv2.rectangle(frame, (440, 235), (590, 275), [COLORS[area][2], COLORS[area][1], COLORS[area][0]], 2)
                 frame = paint_chinese_opencv(frame, "   详细信息", (445, 245),(0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "Update at: " + TIME, (0, 0), (0, 0, 0), 20)
+            for idx, area in enumerate(POS):
+                for pos in POS[area]:
+                    if not select == area:
+                        cv2.rectangle(frame, pos, pos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], thickness=1)
+                    else:
+                        cv2.rectangle(frame, pos, pos, [125, 125, 125], thickness=1)
         else:
             cv2.rectangle(frame, (0, 0), (600, 383), (255, 255, 255), thickness=600)
             cv2.rectangle(frame, (95, 348), (95, 348), (0, 0, 0), 50)
+            cv2.line(frame, (0, 40), (600, 40), (0, 0, 0), 10)
+            cv2.line(frame, (300, 40), (300, 383), (0, 0, 0), 10)
+            if len(CITIES[select]) - page * 6 >= 0:
+                cityrange = list(range(0, len(CITIES[select])))[(page - 1) * 6:page * 6]
+            else:
+                cityrange = list(range(0, len(CITIES[select])))[(page - 1) * 6:len(CITIES[select])]
+            citylst = []
+            for index, key in enumerate(CITIES[select]):
+                if index in cityrange:
+                    citylst.append({key:CITIES[select][key]})
             frame = paint_chinese_opencv(frame, "返回", (76, 338), (255, 255, 255), 20)
             area = select
             positions = POS[area][:]
@@ -107,26 +133,15 @@ if __name__ == '__main__':
             upmove = miny - yobjpos
             for index, apoint in enumerate(positions):
                 positions[index] = [positions[index][0] - leftmove, positions[index][1] - upmove]
-        cv2.rectangle(frame, (35, 348), (35, 348), (0, 0, 0), 50)
-        frame = paint_chinese_opencv(frame, "退出", (16, 338), (255, 255, 255), 20)
-        if not cities_view:
-            frame = paint_chinese_opencv(frame, "Update at: " + TIME, (0, 0), (0, 0, 0), 20)
-            for idx, area in enumerate(POS):
-                for pos in POS[area]:
-                    if not select == area:
-                        cv2.rectangle(frame, pos, pos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], thickness=1)
-                    else:
-                        cv2.rectangle(frame, pos, pos, [125, 125, 125], thickness=1)
-        else:
             frame = paint_chinese_opencv(frame, select, (265, 0), COLORS[select], 30)
             for pos in positions:
-                xbig = int(235 / pweight)
-                ybig = int(318 / ptall)
+                xbig = int(280 / pweight)
+                ybig = int(200 / ptall)
                 final = min(xbig, ybig)
                 if final == 1:
                     final = 1.5
-                if final > 10:
-                    final = 10
+                if final > 9:
+                    final = 9
                 newpos = [pos[0] * final, pos[1] * final]
                 newweight = pweight * final + final * 2
                 newtall = ptall * final + final * 2
@@ -137,10 +152,44 @@ if __name__ == '__main__':
                 newpos = [newpos[0] - needminusx, newpos[1] - needminusy]
                 newpos = [int(newpos[0]), int(newpos[1])]
                 cv2.rectangle(frame, newpos, newpos, [COLORS[area][2], COLORS[area][1], COLORS[area][0]], int(final * 2))
+            cv2.line(frame, (300, 40), (300, 285), (0, 0, 0), 10)
+            cv2.line(frame, (420, 40), (420, 285), (0, 0, 0), 10)
+            cv2.line(frame, (480, 40), (480, 285), (0, 0, 0), 10)
+            cv2.line(frame, (540, 40), (540, 285), (0, 0, 0), 10)
+            cv2.line(frame, (300, 285), (600, 285), (0, 0, 0), 10)
+            frame = paint_chinese_opencv(frame, "城市", (305, 45), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "确诊", (425, 45), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "治愈", (485, 45), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "死亡", (545, 45), (0, 0, 0), 20)
+            cv2.line(frame, (300, 75), (600, 75), (0, 0, 0), 5)
+            cv2.rectangle(frame, (350, 335), (350, 335), (125, 125, 125), 50)
+            cv2.rectangle(frame, (550, 335), (550, 335), (125, 125, 125), 50)
+            frame = paint_chinese_opencv(frame, f"{page}/{int(len(CITIES[select]) / 6) + 1}", (440, 326), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "<-", (336, 326), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "->", (536, 326), (0, 0, 0), 20)
+            for index, city in enumerate(citylst):
+                y = 75 + 35 * index + 5
+                frame = paint_chinese_opencv(frame, list(city.keys())[0], (305, y), (0, 0, 0), 20)
+                frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][0]), (425, y), (0, 0, 0), 20)
+                frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][1]), (485, y), (0, 0, 0), 20)
+                frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][2]), (545, y), (0, 0, 0), 20)
+        cv2.rectangle(frame, (35, 348), (35, 348), (0, 0, 0), 50)
+        frame = paint_chinese_opencv(frame, "退出", (16, 338), (255, 255, 255), 20)
+        #TODO:事件响应
+        def mousecallback(event, x, y, *args):
+            global point, evt
+            if event == cv2.EVENT_LBUTTONUP or event == cv2.EVENT_RBUTTONDOWN:
+                point = [x, y]
+                evt = 1
+            elif event == cv2.EVENT_MOUSEMOVE:
+                point = [x, y]
+                evt = 0
         cv2.setMouseCallback('COVID-19 Map of China', mousecallback)
+        #TODO:显示屏幕
         cv2.namedWindow('COVID-19 Map of China', 0)
         cv2.imshow('COVID-19 Map of China', frame)
         cv2.setWindowTitle('COVID-19 Map of China', 'COVID-19 Map of China')
+        #TODO:更新屏幕
         k = cv2.waitKey(1)
         if not cv2.getWindowProperty('COVID-19 Map of China', cv2.WND_PROP_VISIBLE):
             break
