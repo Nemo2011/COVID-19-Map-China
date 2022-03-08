@@ -60,19 +60,19 @@ if __name__ == '__main__':
             if page - 1 > 0:
                 page -= 1
         if cities_view and point[0] in range(500, 600) and point[1] in range(300, 401) and evt == 1:
-            if page + 1 <= int(len(CITIES[select]) / 6) + int(bool(len(CITIES[select]) % 6 / 1)):
+            if page + 1 <= int(len(CITIES[select]) / 5) + int(bool(len(CITIES[select]) % 5 / 1)):
                 page += 1
 
         #TODO:绘制显示内容
         frame = cv2.imread("map_background.png")
         if not cities_view:
             if not select_asked:
-                state_string = f"----中国----\n确诊{CHINA_TOTAL}人,\n治愈{CHINA_HEAL}人,\n死亡{CHINA_DEAD}人"
+                state_string = f"----中国----\n确诊{CHINA_TOTAL}人,\n死亡{CHINA_DEAD}人\n治愈{CHINA_HEAL}人"
                 frame = paint_chinese_opencv(frame, state_string, (445, 130), (0, 0, 0), 20)
                 cv2.rectangle(frame, (440, 240), (590, 280), (0, 0, 0), 2)
                 frame = paint_chinese_opencv(frame, "已选择：" + select, (445, 250), (0, 0, 0), 20)
             else:
-                state_string = f"----{select}----\n确诊{CONFIRM_SORT[AREAS.index(select)]}人,\n治愈{HEAL_SORT[AREAS.index(select)]}人,\n死亡{DEAD_SORT[AREAS.index(select)]}人"
+                state_string = f"----{select}----\n确诊{CONFIRM_SORT[AREAS.index(select)]}人,\n死亡{DEAD_SORT[AREAS.index(select)]}人,\n治愈{HEAL_SORT[AREAS.index(select)]}人"
                 frame = paint_chinese_opencv(frame, state_string, (445, 130), (0, 0, 0), 20)
                 area = select
                 cv2.rectangle(frame, (440, 235), (590, 275), [COLORS[area][2], COLORS[area][1], COLORS[area][0]], 2)
@@ -89,13 +89,15 @@ if __name__ == '__main__':
         else:
             cv2.rectangle(frame, (0, 0), (600, 383), (255, 255, 255), thickness=600)
             cv2.rectangle(frame, (95, 348), (95, 348), (0, 0, 0), 50)
-            cv2.line(frame, (0, 40), (600, 40), (0, 0, 0), 10)
-            cv2.line(frame, (300, 40), (300, 383), (0, 0, 0), 10)
-            if len(CITIES[select]) - page * 6 >= 0:
-                cityrange = list(range(0, len(CITIES[select])))[(page - 1) * 6:page * 6]
+            cv2.line(frame, (0, 40), (600, 40), (0, 0, 0), 5)
+            cv2.line(frame, (300, 40), (300, 383), (0, 0, 0), 5)
+            cv2.line(frame, (300, 100), (600, 100), (0, 0, 0), 5)
+            if len(CITIES[select]) - page * 5 >= 0:
+                cityrange = list(range(0, len(CITIES[select])))[(page - 1) * 5:page * 5]
             else:
-                cityrange = list(range(0, len(CITIES[select])))[(page - 1) * 6:len(CITIES[select])]
-            citylst = []
+                cityrange = list(range(0, len(CITIES[select])))[(page - 1) * 5:len(CITIES[select])]
+            select_lst = TOTALS[select]
+            citylst = [{f"{select}所有":select_lst}]
             for index, key in enumerate(CITIES[select]):
                 if index in cityrange:
                     citylst.append({key:CITIES[select][key]})
@@ -149,12 +151,12 @@ if __name__ == '__main__':
             cv2.line(frame, (300, 285), (600, 285), (0, 0, 0), 5)
             frame = paint_chinese_opencv(frame, "城市", (305, 45), (0, 0, 0), 20)
             frame = paint_chinese_opencv(frame, "确诊", (425, 45), (0, 0, 0), 20)
-            frame = paint_chinese_opencv(frame, "治愈", (485, 45), (0, 0, 0), 20)
-            frame = paint_chinese_opencv(frame, "死亡", (545, 45), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "死亡", (485, 45), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, "治愈", (545, 45), (0, 0, 0), 20)
             cv2.line(frame, (300, 75), (600, 75), (0, 0, 0), 5)
             cv2.rectangle(frame, (350, 335), (350, 335), (125, 125, 125), 50)
             cv2.rectangle(frame, (550, 335), (550, 335), (125, 125, 125), 50)
-            frame = paint_chinese_opencv(frame, f"{page}/{int(len(CITIES[select]) / 6) + int(bool(len(CITIES[select]) % 6 / 1))}", (440, 326), (0, 0, 0), 20)
+            frame = paint_chinese_opencv(frame, f"{page}/{int(len(CITIES[select]) / 5) + int(bool(len(CITIES[select]) % 5 / 1))}", (440, 326), (0, 0, 0), 20)
             frame = paint_chinese_opencv(frame, "<-", (340, 326), (0, 0, 0), 20)
             frame = paint_chinese_opencv(frame, "->", (540, 326), (0, 0, 0), 20)
             for index, city in enumerate(citylst):

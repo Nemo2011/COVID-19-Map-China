@@ -36,8 +36,8 @@ new_heal = []
 total_lst.sort()
 for num in total_lst:
     areas.append(get_key_lists_index(num, total_dict))
-    new_dead.append(total_dict[get_key_lists_index(num, total_dict)][1])
     new_heal.append(total_dict[get_key_lists_index(num, total_dict)][2])
+    new_dead.append(total_dict[get_key_lists_index(num, total_dict)][1])
 total_lst = total_lst[::-1]
 new_dead = new_dead[::-1]
 new_heal = new_heal[::-1]
@@ -51,7 +51,7 @@ for area in areas:
     new_data = {}
     for city in cities_data:
         name = city['name']
-        new_data[city['name']] = [city['total']['confirm'], city['total']['heal'], city['total']['dead']]
+        new_data[city['name']] = [city['total']['confirm'], city['total']['dead'], city['total']['heal']]
     sort_data = {}
     for key in new_data:
         if key.count("待确认") >= 1:
@@ -79,3 +79,4 @@ DEAD_SORT = new_dead
 HEAL_SORT = new_heal
 CITIES = cities
 AREAS = areas
+TOTALS = total_dict
