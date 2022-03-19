@@ -253,6 +253,7 @@ if __name__ == '__main__':
         page = 1
         down = False
         hides = [False, False, False, False, False, False, False, False]
+        highlights = [False, False, False, False, False, False, False, False]
         down_count = 0
 
         while True:
@@ -265,7 +266,9 @@ if __name__ == '__main__':
                     color = color_by_level(level)
                     color = (color[2], color[1], color[0])
                     if hides[level] == True:
-                        color = (0, 139, 0)
+                        color = (125, 125, 125)
+                    elif highlights[level] == True:
+                        color = (253, 255, 199)
                     frame = paint_chinese_opencv(frame, range_by_level(level), (10, level * 20 - 20), (0, 0, 0), 20)
                     img_pil = Image.fromarray(frame)
                     img_draw = ImageDraw.Draw(img_pil)
@@ -358,7 +361,9 @@ if __name__ == '__main__':
                             lvl = color[3]
                             color = [color[2], color[1], color[0]]
                             if hides[lvl] == True:
-                                cv2.rectangle(frame, pos, pos, (0, 139, 0), thickness=1)
+                                cv2.rectangle(frame, pos, pos, (125, 125, 125), thickness=1)
+                            elif highlights[lvl] == True:
+                                cv2.rectangle(frame, pos, pos, (253, 255, 199), thickness=1)
                             else:
                                 cv2.rectangle(frame, pos, pos, color, thickness=1)
                         else:
@@ -371,7 +376,7 @@ if __name__ == '__main__':
                     else:
                         numselect = CONFIRM_SORT[AREAS_SORT.index(area)]
                     level = color_by_num(numselect, level=True)[3]
-                    if hides[level] == False:
+                    if hides[level] == False and highlights[level] == False:
                         if area == "北京":
                             if showmode == 0:
                                 numselect = NOW_SORT[AREAS_SORT.index('河北')]
@@ -517,9 +522,8 @@ if __name__ == '__main__':
 
             # TODO:事件响应
             def mousecallback(event, x, y, *args):
-                global point, evt, down, down_count
+                global point, evt, down
                 if event == cv2.EVENT_LBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN or event == cv2.EVENT_MBUTTONDOWN:
-                    point = [0, 0]
                     evt = 2
                     down = True
                 elif down and event == cv2.EVENT_LBUTTONUP or event == cv2.EVENT_RBUTTONUP or event == cv2.EVENT_MBUTTONUP:
@@ -560,11 +564,19 @@ if __name__ == '__main__':
             if cities_view and point[0] in range(515, 576) and point[1] in range(315, 376) and evt == 1:
                 if page + 1 <= int(len(CITIES[select]) / 5) + int(bool(len(CITIES[select]) % 5 / 1)):
                     page += 1
+            legendflag = False
             for level in range(1, 8, 1):
                 xrange = range(1, 9, 1)
                 yrange = range(level * 20 - 20, level * 20 + 1)
-                if point[0] in xrange and point[1] in yrange and evt == 1:
-                    hides[level] = not hides[level]
+                if point[0] in xrange and point[1] in yrange:
+                    if evt == 1:
+                        hides[level] = not hides[level]
+                        legendflag = True
+                    else:
+                        highlights[level] = True
+                        legendflag = True
+                else:
+                    highlights[level] = False
             for x in range(20):
                 for y in range(10):
                     for place in SPEC_STATIC:
@@ -599,16 +611,12 @@ if __name__ == '__main__':
                     else:
                         select_asked_select = ""
                         select_asked = False
-                        pos = [0, 0]
-                        evt = 3
                         continue
                 if select_asked and evt == 0:
                     if not cities_view:
                         select_asked_select = ""
 
             # TODO:更新
-            pos = [0, 0]
-            evt = 3
             k = cv2.waitKey(1)
             if not cv2.getWindowProperty('COVID-19 Map of China', cv2.WND_PROP_VISIBLE):
                 break
