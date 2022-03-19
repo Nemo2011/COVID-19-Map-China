@@ -1,3 +1,4 @@
-Confirm-Datas-Tests.html
-COVIDs.json
 __pycache__/
+.idea/
+venv/
+covids.json
