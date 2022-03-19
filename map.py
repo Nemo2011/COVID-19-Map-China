@@ -219,7 +219,7 @@ if __name__ == '__main__':
         # TODO:初始化
         MAJOR = 1
         MINOR = 0
-        MICRO = 0
+        MICRO = 1
         VER = str(MAJOR) + '.' + str(MINOR) + '.' + str(MICRO)
         DATE = '2022-03-19'
         print_info("COVID-19-Map-China: version " + VER)
@@ -256,9 +256,30 @@ if __name__ == '__main__':
 
         while True:
             # TODO:处理事件
+            print(page)
             poses = POS.copy()
             # 香港澳门点击字体也算选择，因为太小了。
             # 这里复制一份字典，使用自己的函数添加字体对应的点吗，POS用于绘制不变。
+            if not cities_view and point[0] in range(70, 130) and point[1] in range(323, 373) and evt == 1:
+                showmode = 0
+            if not cities_view and point[0] in range(130, 190) and point[1] in range(323, 373) and evt == 1:
+                showmode = 1
+            if 10 <= point[0] <= 60 and 323 <= point[1] <= 373 and evt == 1:
+                break
+            if cities_view and 70 <= point[0] <= 120 and 323 <= point[1] <= 373 and evt == 1:
+                cities_view = False
+                page = 1
+            if cities_view and point[0] in range(315, 376) and point[1] in range(315, 376) and evt == 1:
+                if page - 1 > 0:
+                    page -= 1
+            if cities_view and point[0] in range(515, 576) and point[1] in range(315, 376) and evt == 1:
+                if page + 1 <= int(len(CITIES[select]) / 5) + int(bool(len(CITIES[select]) % 5 / 1)):
+                    page += 1
+            for level in range(1, 8, 1):
+                xrange = range(1, 9, 1)
+                yrange = range(level * 20 - 20, level * 20 + 1)
+                if point[0] in xrange and point[1] in yrange and evt == 1:
+                    hides[level] = not hides[level]
             for x in range(20):
                 for y in range(10):
                     for place in SPEC_STATIC:
@@ -288,6 +309,8 @@ if __name__ == '__main__':
                     if point[0] in range(480, 580) and point[1] in range(290, 330) and evt == 1:
                         cities_view = True
                         page = 1
+                        if page == 2:
+                            print("ababa")
                     elif cities_view:
                         pass
                     else:
@@ -296,26 +319,6 @@ if __name__ == '__main__':
                 if select_asked and evt == 0:
                     if not cities_view:
                         select_asked_select = ""
-            if not cities_view and point[0] in range(70, 130) and point[1] in range(323, 373) and evt == 1:
-                showmode = 0
-            if not cities_view and point[0] in range(130, 190) and point[1] in range(323, 373) and evt == 1:
-                showmode = 1
-            if 10 <= point[0] <= 60 and 323 <= point[1] <= 373 and evt == 1:
-                break
-            if cities_view and 70 <= point[0] <= 120 and 323 <= point[1] <= 373 and evt == 1:
-                cities_view = False
-                page = 1
-            if cities_view and point[0] in range(315, 376) and point[1] in range(315, 376) and evt == 1:
-                if page - 1 > 0:
-                    page -= 1
-            if cities_view and point[0] in range(515, 676) and point[1] in range(315, 376) and evt == 1:
-                if page + 1 <= int(len(CITIES[select]) / 5) + int(bool(len(CITIES[select]) % 5 / 1)):
-                    page += 1
-            for level in range(1, 8, 1):
-                xrange = range(1, 9, 1)
-                yrange = range(level * 20 - 20, level * 20 + 1)
-                if point[0] in xrange and point[1] in yrange and evt == 1:
-                    hides[level] = not hides[level]
             # TODO:绘制显示内容
             frame = cv2.imread("map_background.png")
             frame = paint_chinese_opencv(frame, "Update at: " + TIME, (200, 368), (0, 0, 0), 15)
