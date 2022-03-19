@@ -253,72 +253,9 @@ if __name__ == '__main__':
         page = 1
         down = False
         hides = [False, False, False, False, False, False, False, False]
+        down_count = 0
 
         while True:
-            # TODO:处理事件
-            print(page)
-            poses = POS.copy()
-            # 香港澳门点击字体也算选择，因为太小了。
-            # 这里复制一份字典，使用自己的函数添加字体对应的点吗，POS用于绘制不变。
-            if not cities_view and point[0] in range(70, 130) and point[1] in range(323, 373) and evt == 1:
-                showmode = 0
-            if not cities_view and point[0] in range(130, 190) and point[1] in range(323, 373) and evt == 1:
-                showmode = 1
-            if 10 <= point[0] <= 60 and 323 <= point[1] <= 373 and evt == 1:
-                break
-            if cities_view and 70 <= point[0] <= 120 and 323 <= point[1] <= 373 and evt == 1:
-                cities_view = False
-                page = 1
-            if cities_view and point[0] in range(315, 376) and point[1] in range(315, 376) and evt == 1:
-                if page - 1 > 0:
-                    page -= 1
-            if cities_view and point[0] in range(515, 576) and point[1] in range(315, 376) and evt == 1:
-                if page + 1 <= int(len(CITIES[select]) / 5) + int(bool(len(CITIES[select]) % 5 / 1)):
-                    page += 1
-            for level in range(1, 8, 1):
-                xrange = range(1, 9, 1)
-                yrange = range(level * 20 - 20, level * 20 + 1)
-                if point[0] in xrange and point[1] in yrange and evt == 1:
-                    hides[level] = not hides[level]
-            for x in range(20):
-                for y in range(10):
-                    for place in SPEC_STATIC:
-                        pos = TEXTS_POS[place]
-                        poses[place] = spec_append(poses[place], [pos[0] + x, pos[1] + y])
-            flag = False
-            for index, area in enumerate(poses):
-                points = poses[area]
-                mousepos = point
-                if mousepos in points:
-                    if not select_asked:
-                        select = area
-                    if not select_asked and evt == 1:
-                        select = area
-                        select_asked = True
-                    if select_asked and evt == 1:
-                        if not cities_view:
-                            select = area
-                    if select_asked and evt == 0:
-                        if not cities_view:
-                            select_asked_select = area
-                    flag = True
-            if not flag:
-                if not select_asked:
-                    select = ""
-                if select_asked and evt == 1:
-                    if point[0] in range(480, 580) and point[1] in range(290, 330) and evt == 1:
-                        cities_view = True
-                        page = 1
-                        if page == 2:
-                            print("ababa")
-                    elif cities_view:
-                        pass
-                    else:
-                        select_asked_select = ""
-                        select_asked = False
-                if select_asked and evt == 0:
-                    if not cities_view:
-                        select_asked_select = ""
             # TODO:绘制显示内容
             frame = cv2.imread("map_background.png")
             frame = paint_chinese_opencv(frame, "Update at: " + TIME, (200, 368), (0, 0, 0), 15)
@@ -434,19 +371,22 @@ if __name__ == '__main__':
                     else:
                         numselect = CONFIRM_SORT[AREAS_SORT.index(area)]
                     level = color_by_num(numselect, level=True)[3]
-                    if area == "北京":
-                        if showmode == 0:
-                            numselect = NOW_SORT[AREAS_SORT.index('河北')]
-                        else:
-                            numselect = CONFIRM_SORT[AREAS_SORT.index('河北')]
-                        level = color_by_num(numselect, level=True)[3]
-                        if level in [1,
-                                     2] and not "河北" in SPEC_STATIC and "河北" != select and "河北" != select_asked_select:
+                    if hides[level] == False:
+                        if area == "北京":
+                            if showmode == 0:
+                                numselect = NOW_SORT[AREAS_SORT.index('河北')]
+                            else:
+                                numselect = CONFIRM_SORT[AREAS_SORT.index('河北')]
+                            level = color_by_num(numselect, level=True)[3]
+                            if level in [1,
+                                         2] and not "河北" in SPEC_STATIC and "河北" != select and "河北" != select_asked_select:
+                                frame = paint_chinese_opencv(frame, area, TEXTS_POS[area], (255, 255, 255), 12)
+                            else:
+                                frame = paint_chinese_opencv(frame, area, TEXTS_POS[area], (0, 0, 0), 12)
+                        elif level in [1, 2] and not area in SPEC_STATIC and area != select and area != select_asked_select:
                             frame = paint_chinese_opencv(frame, area, TEXTS_POS[area], (255, 255, 255), 12)
                         else:
                             frame = paint_chinese_opencv(frame, area, TEXTS_POS[area], (0, 0, 0), 12)
-                    elif level in [1, 2] and not area in SPEC_STATIC and area != select and area != select_asked_select:
-                        frame = paint_chinese_opencv(frame, area, TEXTS_POS[area], (255, 255, 255), 12)
                     else:
                         frame = paint_chinese_opencv(frame, area, TEXTS_POS[area], (0, 0, 0), 12)
             else:
@@ -528,7 +468,7 @@ if __name__ == '__main__':
                 cv2.line(frame, (300, 285), (600, 285), (0, 0, 0), 4)
                 frame = paint_chinese_opencv(frame, "城市", (305, 45), (0, 0, 0), 15)
                 frame = paint_chinese_opencv(frame, "确诊", (380, 45), (0, 0, 0), 15)
-                frame = paint_chinese_opencv(frame, "现有", (425, 45), (0, 0, 0), 12)
+                frame = paint_chinese_opencv(frame, "现有", (425, 45), (0, 0, 0), 15)
                 frame = paint_chinese_opencv(frame, "新增", (470, 45), (0, 0, 0), 15)
                 frame = paint_chinese_opencv(frame, "死亡", (515, 45), (0, 0, 0), 15)
                 frame = paint_chinese_opencv(frame, "治愈", (560, 45), (0, 0, 0), 15)
@@ -567,7 +507,7 @@ if __name__ == '__main__':
                         frame = paint_chinese_opencv(frame, citytxt, (303, yfir), (0, 0, 139), 12)
                     else:
                         frame = paint_chinese_opencv(frame, citytxt, (303, yfir), fircolor, 12)
-                    frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][0]), (378, y), (255, 0, 0),12)
+                    frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][0]), (378, y), (255, 0, 0), 12)
                     frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][1]), (423, y), (0, 0, 0), 12)
                     frame = paint_chinese_opencv(frame, addtxt, (468, y), (255, 0, 0), 12)
                     frame = paint_chinese_opencv(frame, str(city[list(city.keys())[0]][3]), (513, y), (0, 0, 0), 12)
@@ -577,7 +517,7 @@ if __name__ == '__main__':
 
             # TODO:事件响应
             def mousecallback(event, x, y, *args):
-                global point, evt, down
+                global point, evt, down, down_count
                 if event == cv2.EVENT_LBUTTONDOWN or event == cv2.EVENT_RBUTTONDOWN or event == cv2.EVENT_MBUTTONDOWN:
                     point = [0, 0]
                     evt = 2
@@ -597,6 +537,74 @@ if __name__ == '__main__':
             cv2.namedWindow('COVID-19 Map of China', 0)
             cv2.imshow('COVID-19 Map of China', frame)
             cv2.setWindowTitle('COVID-19 Map of China', cap)
+
+            # TODO:处理事件
+            poses = POS.copy()
+            # 香港澳门点击字体也算选择，因为太小了。
+            # 这里复制一份字典，使用自己的函数添加字体对应的点吗，POS用于绘制不变。
+            if 10 <= point[0] <= 60 and 323 <= point[1] <= 373 and evt == 1:
+                break
+            if not cities_view and point[0] in range(70, 130) and point[1] in range(323, 373) and evt == 1:
+                showmode = 0
+            if not cities_view and point[0] in range(130, 190) and point[1] in range(323, 373) and evt == 1:
+                showmode = 1
+            if cities_view and 70 <= point[0] <= 120 and 323 <= point[1] <= 373 and evt == 1:
+                cities_view = False
+                page = 1
+                pos = [0, 0]
+                evt = 3
+                continue
+            if cities_view and point[0] in range(315, 376) and point[1] in range(315, 376) and evt == 1:
+                if page - 1 > 0:
+                    page -= 1
+            if cities_view and point[0] in range(515, 576) and point[1] in range(315, 376) and evt == 1:
+                if page + 1 <= int(len(CITIES[select]) / 5) + int(bool(len(CITIES[select]) % 5 / 1)):
+                    page += 1
+            for level in range(1, 8, 1):
+                xrange = range(1, 9, 1)
+                yrange = range(level * 20 - 20, level * 20 + 1)
+                if point[0] in xrange and point[1] in yrange and evt == 1:
+                    hides[level] = not hides[level]
+            for x in range(20):
+                for y in range(10):
+                    for place in SPEC_STATIC:
+                        pos = TEXTS_POS[place]
+                        poses[place] = spec_append(poses[place], [pos[0] + x, pos[1] + y])
+            flag = False
+            for index, area in enumerate(poses):
+                points = poses[area]
+                mousepos = point
+                if mousepos in points:
+                    if not select_asked:
+                        select = area
+                    if not select_asked and evt == 1:
+                        select = area
+                        select_asked = True
+                    if select_asked and evt == 1:
+                        if not cities_view:
+                            select = area
+                    if select_asked and evt == 0:
+                        if not cities_view:
+                            select_asked_select = area
+                    flag = True
+            if not flag:
+                if not select_asked:
+                    select = ""
+                if select_asked and evt == 1:
+                    if point[0] in range(480, 580) and point[1] in range(290, 330) and evt == 1:
+                        cities_view = True
+                        page = 1
+                    elif cities_view:
+                        pass
+                    else:
+                        select_asked_select = ""
+                        select_asked = False
+                        pos = [0, 0]
+                        evt = 3
+                        continue
+                if select_asked and evt == 0:
+                    if not cities_view:
+                        select_asked_select = ""
 
             # TODO:更新
             pos = [0, 0]

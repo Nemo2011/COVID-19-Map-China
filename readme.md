@@ -9,7 +9,7 @@ By YiMoXia at 2022-03-19.
 
 ## Usage 用法
 
-功能暂未完善。[主程序](map.py)（未完善）直接运行。
+[主程序](map.py)直接运行。
 
 ``` powershell
 # Windows 7/10/11
@@ -19,6 +19,11 @@ python3 map.py
 # or use python3-py
 py map.py
 ```
+
+### 页面说明
+
+![主页](map_printscreen_mainpage.png)
+![详情页](map_printscreen_citiespage.png)
 
 ## Changelog [更新记录](changelog.md)
 
