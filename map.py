@@ -218,10 +218,10 @@ if __name__ == '__main__':
 
         # TODO:初始化
         MAJOR = 1
-        MINOR = 0
+        MINOR = 1
         MICRO = 1
         VER = str(MAJOR) + '.' + str(MINOR) + '.' + str(MICRO)
-        DATE = '2022-03-19'
+        DATE = '2022-03-20'
         print_info("COVID-19-Map-China: version " + VER)
         print_info("COVID-19-Map-China: last update at " + DATE)
         print_info("Loading COVID-19 datas. ")
@@ -501,13 +501,13 @@ if __name__ == '__main__':
                         frame = paint_chinese_opencv(frame, f"{GRADES[select][list(city.keys())[0]]}", (303, y + 8),
                                                      (0, 0, 139), 12)
                     addtxt = f"{num_or_none(city[list(city.keys())[0]][2])}"
-                    if list(city.keys())[0] in NOT_UPDATE_CITIES[select]:
-                        if list(city.keys())[0].count("待确认") >= 1:
+                    if list(city.keys())[0].count("待确认") >= 1:
                             fircolor = (0, 0, 139)
-                        else:
-                            fircolor = (139, 0, 0)
                     else:
-                        fircolor = (0, 139, 0)
+                        if list(city.keys())[0] in NOT_UPDATE_CITIES[select]:
+                            fircolor = (139, 0, 0)
+                        else:
+                            fircolor = (0, 139, 0)
                     if index == 0:
                         frame = paint_chinese_opencv(frame, citytxt, (303, yfir), (0, 0, 139), 12)
                     else:

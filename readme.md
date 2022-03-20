@@ -1,7 +1,7 @@
 # 中国疫情地图 COVID-19-MAP-CHINA
 
-版本1.1.0(正式)2022.3.19
-By YiMoXia at 2022-03-19. 
+版本1.1.1(正式)2022.3.20
+By YiMoXia at 2022-03-20.  
 
 ## Overview 预览
 
