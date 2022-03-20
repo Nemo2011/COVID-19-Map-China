@@ -603,7 +603,7 @@ if __name__ == '__main__':
                 if not select_asked:
                     select = ""
                 if select_asked and evt == 1:
-                    if point[0] in range(480, 580) and point[1] in range(290, 330) and evt == 1:
+                    if point[0] in range(480, 580) and point[1] in range(290, 330) and evt == 1 and not cities_view:
                         cities_view = True
                         page = 1
                     elif cities_view:
