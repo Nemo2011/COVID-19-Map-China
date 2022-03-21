@@ -224,7 +224,7 @@ if __name__ == '__main__':
         MINOR = 2
         MICRO = 0
         VER = str(MAJOR) + '.' + str(MINOR) + '.' + str(MICRO)
-        DATE = '2022-03-20'
+        DATE = '2022-03-21'
         print_info("COVID-19-Map-China: version " + VER)
         print_info("COVID-19-Map-China: last update at " + DATE)
         print_info("Loading COVID-19 datas. ")
@@ -661,11 +661,11 @@ if __name__ == '__main__':
                 print_info("Loading COVID-19 datas. ")
                 importlib.reload(covids)
                 from covids import (ADD_SORT, AREAS_SORT, CHINA_DEAD, CHINA_HEAL,
-                            CHINA_IMPORT, CHINA_LOCAL, CHINA_NO_INFECT,
-                            CHINA_NOW_CONFIRM, CHINA_SEVERE, CHINA_SUSPECT,
-                            CHINA_TOTAL, CITIES, NOW_SORT, CONFIRM_SORT,
-                            DEAD_SORT, GRADES, HEAL_SORT, LOCAL_SORT, TIME,
-                            NOT_UPDATE_PROVINCE, NOT_UPDATE_CITIES)
+                                    CHINA_IMPORT, CHINA_LOCAL, CHINA_NO_INFECT,
+                                    CHINA_NOW_CONFIRM, CHINA_SEVERE, CHINA_SUSPECT,
+                                    CHINA_TOTAL, CITIES, NOW_SORT, CONFIRM_SORT,
+                                    DEAD_SORT, GRADES, HEAL_SORT, LOCAL_SORT, TIME,
+                                    NOT_UPDATE_PROVINCE, NOT_UPDATE_CITIES)
                 print_info("Done. ")
             if not cities_view and point[0] in range(70, 130) and point[1] in range(323, 373) and evt == 1:
                 showmode = 0
