@@ -30,10 +30,13 @@ def print_scroll(start_time_perf_counter: float, all: Union[int, float], now: Un
     hour = time // 3600
     minute = time % 3600 // 60
     second = time % 60
-    timestr = str(hour).zfill(1) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
+    timestr = str(hour).zfill(1) + ":" + str(minute).zfill(2) + \
+        ":" + str(second).zfill(2)
     print(
-        "|" + "-" * int(length / 100 * int(now / all * 100)) + "|" + str(int(now / all * 100)) + "% " + timestr + "\r",
+        "|" + "-" * int(length / 100 * int(now / all * 100)) +
+        "|" + str(int(now / all * 100)) + "% " + timestr + "\r",
         end='')
+
 
 print_info("Loading ...")
 

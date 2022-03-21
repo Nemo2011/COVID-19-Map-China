@@ -27,6 +27,10 @@ py map.py
 
 ## Changelog [更新记录](changelog.md)
 
+## 最新：中国疫情地图版本1.2.0 [更新] 2022.3.21
+
+- 1. [Add] 新增“新增确诊”地图查看模式，看新增。
+
 ## Third-Party 第三方库
 
 安装：`pip install -r requirements.txt`

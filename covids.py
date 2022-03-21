@@ -45,7 +45,8 @@ load = True
 data = {}
 while load:
     try:
-        url = 'https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5&callback=&_=%d' % int(time() * 1000)
+        url = 'https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5&callback=&_=%d' % int(
+            time() * 1000)
         r = requests.get(url=url)
         data = json.loads(r.json()['data'])
         with open("covids.json", "w+") as file:
@@ -74,7 +75,8 @@ try:
         area_now = area['total']['nowConfirm']
         area_local = area['total']['provinceLocalConfirm']
         total_lst.append(area_confirm)
-        total_dict[area_name] = [area_confirm, area_now, area_add, area_dead, area_heal, area_local]
+        total_dict[area_name] = [area_confirm, area_now,
+                                 area_add, area_dead, area_heal, area_local]
         if area['today']['isUpdated'] == False:
             not_updates_province.append(area['name'])
     new_dead = []
@@ -104,7 +106,8 @@ try:
         cities_data = []
         for index, cs in enumerate(data['areaTree'][0]['children']):
             if cs['name'] == area:
-                cities_data = (data['areaTree'][0]['children'][index]['children'])
+                cities_data = (data['areaTree'][0]
+                               ['children'][index]['children'])
         new_data = {}
         grades = {}
         not_update = []
@@ -179,7 +182,7 @@ else:
         cities_data,
         city,
         cs,
-        #data,
+        # data,
         file,
         grades,
         index,
