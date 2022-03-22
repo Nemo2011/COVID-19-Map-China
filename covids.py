@@ -1,7 +1,7 @@
 """ COVID-19's data's sets. """
 import json
 import sys
-from time import sleep, time
+from time import time
 import requests
 
 
@@ -41,23 +41,19 @@ def get_key_lists_index(obj: object, dct: dict, idx: int = 0) -> object:
 print("COVID-DATA: Loading ...")
 
 # TODO:爬取数据
-load = True
 data = {}
-while load:
-    try:
-        url = 'https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5&callback=&_=%d' % int(
-            time() * 1000)
-        r = requests.get(url=url)
-        data = json.loads(r.json()['data'])
-        with open("covids.json", "w+") as file:
-            json.dump(data, file, indent=4)
-        load = False
-    except Exception as e:
-        print_errs(str(e))
-        sleep(5)
-        continue
-    else:
-        print_info("Gets the json data successfully. ")
+try:
+    url = 'https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5&callback=&_=%d' % int(
+        time() * 1000)
+    r = requests.get(url=url)
+    data = json.loads(r.json()['data'])
+    with open("covids.json", "w+") as file:
+        json.dump(data, file, indent=4)
+except Exception as e:
+    print_errs(str(e))
+    print_info("Ending. ")
+    sys.exit()
+print_info("Gets the json data successfully. ")
 
 # TODO:处理数据
 try:
@@ -182,13 +178,12 @@ else:
         cities_data,
         city,
         cs,
-        # data,
+        data, 
         file,
         grades,
         index,
         key,
         last_time,
-        load,
         name,
         new_add,
         new_data,

@@ -222,9 +222,9 @@ if __name__ == '__main__':
         # TODO:初始化
         MAJOR = 1
         MINOR = 2
-        MICRO = 0
+        MICRO = 1
         VER = str(MAJOR) + '.' + str(MINOR) + '.' + str(MICRO)
-        DATE = '2022-03-21'
+        DATE = '2022-03-22'
         print_info("COVID-19-Map-China: version " + VER)
         print_info("COVID-19-Map-China: last update at " + DATE)
         print_info("Loading COVID-19 datas. ")
@@ -457,9 +457,11 @@ if __name__ == '__main__':
                         if area == "北京":
                             if showmode == 0:
                                 numselect = NOW_SORT[AREAS_SORT.index('河北')]
-                            else:
+                            elif showmode == 1:
                                 numselect = CONFIRM_SORT[AREAS_SORT.index(
                                     '河北')]
+                            else:
+                                numselect = ADD_SORT[AREAS_SORT.index('河北')]
                             level = color_by_num(numselect, level=True)[3]
                             if level in [1,
                                          2] and not "河北" in SPEC_STATIC and "河北" != select and "河北" != select_asked_select:
