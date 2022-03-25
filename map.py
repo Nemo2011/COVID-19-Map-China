@@ -222,9 +222,9 @@ if __name__ == '__main__':
         # TODO:初始化
         MAJOR = 1
         MINOR = 2
-        MICRO = 1
+        MICRO = 2
         VER = str(MAJOR) + '.' + str(MINOR) + '.' + str(MICRO)
-        DATE = '2022-03-22'
+        DATE = '2022-03-25'
         print_info("COVID-19-Map-China: version " + VER)
         print_info("COVID-19-Map-China: last update at " + DATE)
         print_info("Loading COVID-19 datas. ")
@@ -264,7 +264,7 @@ if __name__ == '__main__':
             # TODO:绘制显示内容
             frame = cv2.imread("map_background.png")
             frame = paint_chinese_opencv(
-                frame, "Update at: " + TIME, (250, 368), (0, 0, 0), 15)
+                frame, "Update at: " + TIME, (235, 368), (0, 0, 0), 15)
             if not cities_view:
                 frame = paint_chinese_opencv(
                     frame, "中国疫情\n  地图", (470, 10), (0, 0, 0), 30)
@@ -364,7 +364,8 @@ if __name__ == '__main__':
                     frame = paint_chinese_opencv(
                         frame, heal, (537, 265), (0, 139, 0), 12)
                     frame = paint_chinese_opencv(
-                        frame, dead, (507, 325), (125, 125, 125), 12)
+                        frame, dead, (477, 325), (125, 125, 125), 12)
+                    frame = paint_chinese_opencv(frame, "\n  刷新", (537, 325), (0, 0, 0), 12)
                     cv2.rectangle(frame, (475, 80), (525, 130), (0, 0, 139), 2)
                     cv2.rectangle(frame, (535, 80),
                                   (585, 130), (240, 0, 240), 2)
@@ -380,8 +381,9 @@ if __name__ == '__main__':
                                   (145, 197, 238), 2)
                     cv2.rectangle(frame, (535, 260),
                                   (585, 310), (0, 139, 0), 2)
-                    cv2.rectangle(frame, (505, 320), (555, 370),
+                    cv2.rectangle(frame, (475, 320), (525, 370),
                                   (125, 125, 125), 2)
+                    cv2.rectangle(frame, (535, 320), (585, 370), (0, 0, 0), 2)
                 else:
                     area = select
                     add = ADD_SORT[AREAS_SORT.index(area)]
@@ -391,11 +393,13 @@ if __name__ == '__main__':
                                   (525, 200), (240, 0, 240), 2)
                     cv2.rectangle(frame, (535, 150),
                                   (585, 200), (0, 0, 139), 2)
-                    cv2.rectangle(frame, (505, 210),
-                                  (555, 260), (19, 69, 139), 2)
+                    cv2.rectangle(frame, (535, 210),
+                                  (585, 260), (19, 69, 139), 2)
+                    cv2.rectangle(frame, (475, 210), (525, 260), (0, 0, 0), 2)
                     nowstr = f"现有病例\n{now}"
-                    confirmstr = f"累计确诊\n{confirm}\n{number2str_with_sum_or_sub(add)}"
+                    confirmstr = f"累计确诊\n{confirm}"
                     localstr = f"本土确诊\n{LOCAL_SORT[AREAS_SORT.index(area)]}"
+                    addstr = f"新增确诊\n{number2str_with_sum_or_sub(add)}"
                     left = (100 - len(area) * 25) / 2
                     frame = paint_chinese_opencv(
                         frame, area, (475 + left, 90), (0, 0, 139), 30)
@@ -405,7 +409,8 @@ if __name__ == '__main__':
                     frame = paint_chinese_opencv(
                         frame, confirmstr, (537, 155), (139, 0, 0), 12)
                     frame = paint_chinese_opencv(
-                        frame, localstr, (507, 215), (139, 69, 19), 12)
+                        frame, localstr, (537, 215), (139, 69, 19), 12)
+                    frame = paint_chinese_opencv(frame, addstr, (477,  215), (0, 0, 0), 12)
                     frame = paint_chinese_opencv(
                         frame, " 详细信息", (480, 300), (0, 0, 0), 20)
                     isupdate = not area in NOT_UPDATE_PROVINCE
@@ -631,7 +636,7 @@ if __name__ == '__main__':
                         city[list(city.keys())[0]][4]), (558, y), (0, 0, 0), 12)
             cv2.rectangle(frame, (35, 348), (35, 348), (0, 0, 0), 50)
             frame = paint_chinese_opencv(
-                frame, "刷新", (16, 338), (255, 255, 255), 20)
+                frame, "退出", (16, 338), (255, 255, 255), 20)
 
             # TODO:事件响应
             def mousecallback(event, x, y, *args):
@@ -659,6 +664,8 @@ if __name__ == '__main__':
             # 香港澳门点击字体也算选择，因为太小了。
             # 这里复制一份字典，使用自己的函数添加字体对应的点吗，POS用于绘制不变。
             if 10 <= point[0] <= 60 and 323 <= point[1] <= 373 and evt == 1:
+                break
+            if not cities_view and point[0] in range(535, 585) and point[1] in range(325, 375) and evt == 1:
                 print_info("Loading COVID-19 datas. ")
                 print_info("Loading COVID-19 datas. ")
                 importlib.reload(covids)
